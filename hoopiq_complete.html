@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>HoopIQ — Basketball Skills Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --or:#FF6B1A;--ord:#CC4A00;--orl:#FF8C4A;
+  --ct:#0D0D1A;--ctm:#141428;--ctd:#0A0A12;
+  --gold:#FFD700;--wh:#F5F5FA;--gr:#8A8FA0;--grl:#BCC0CC;
+  --cbg:rgba(255,255,255,.04);--cbr:rgba(255,255,255,.08);
+  --suc:#1D9E75;--info:#378ADD;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--ct);color:var(--wh);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;font-size:15px}
+h1,h2,h3,.display,.stat-n,.drill-title,.plan-price,.timer-display,.lb-score,.meta-val{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em}
+input,select,textarea,button{font-family:'DM Sans',sans-serif}
+a{color:inherit;text-decoration:none}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--ctd)}
+::-webkit-scrollbar-thumb{background:var(--or);border-radius:2px}
+
+/* ── UTILS ── */
+.hidden{display:none!important}
+.flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}
+.text-center{text-align:center}.text-orange{color:var(--or)}.text-gold{color:var(--gold)}.text-muted{color:var(--gr)}.text-sm{font-size:13px}.text-xs{font-size:11px}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.04em}
+.badge-pro{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid rgba(255,215,0,.3)}
+.badge-free{background:rgba(255,107,26,.12);color:var(--orl);border:1px solid rgba(255,107,26,.25)}
+.badge-new{background:rgba(29,158,117,.15);color:#5DCAA5;border:1px solid rgba(29,158,117,.3)}
+
+/* ── NAV ── */
+#nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--cbr);position:sticky;top:0;background:rgba(13,13,26,.95);backdrop-filter:blur(8px);z-index:200}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--or);letter-spacing:.06em;cursor:pointer}
+.logo span{color:var(--wh)}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--gr);cursor:pointer;transition:.15s;border:none;background:transparent}
+.nav-tab:hover,.nav-tab.active{color:var(--or);background:rgba(255,107,26,.08)}
+.nav-right{display:flex;gap:8px;align-items:center}
+.nav-btn{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;border:1px solid var(--cbr);background:transparent;color:var(--grl)}
+.nav-btn:hover{border-color:var(--or);color:var(--or)}
+.nav-btn.cta{background:var(--or);border-color:var(--or);color:#fff}
+.nav-btn.cta:hover{background:var(--orl)}
+#user-chip{display:none;align-items:center;gap:8px;background:var(--cbg);border:1px solid var(--cbr);border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer}
+#user-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+#user-name-display{font-size:12px;font-weight:500}
+
+/* ── PAGES ── */
+.page{display:none;min-height:calc(100vh - 57px)}
+.page.active{display:block}
+
+/* ── HERO ── */
+#pg-home{background:var(--ct);position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(255,107,26,.1) 0%,transparent 65%);pointer-events:none}
+.hero-inner{max-width:960px;margin:0 auto;padding:56px 20px 48px;text-align:center;position:relative}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,26,.12);border:1px solid rgba(255,107,26,.25);color:var(--orl);font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;margin-bottom:24px}
+.hero-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--or)}
+.hero h1{font-size:clamp(52px,12vw,108px);line-height:.9;margin-bottom:20px}
+.hero-sub{font-size:16px;color:var(--grl);max-width:500px;margin:0 auto 32px;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.btn-primary{background:var(--or);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary:hover{background:var(--orl);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--wh);border:1px solid var(--cbr);padding:13px 28px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;transition:.2s}
+.btn-secondary:hover{border-color:var(--or);color:var(--or)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);max-width:600px;margin:0 auto;gap:1px;background:var(--cbr);border-radius:12px;overflow:hidden}
+.hero-stat{background:var(--ct);padding:18px 12px;text-align:center}
+.hero-stat .n{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--or)}
+.hero-stat .l{font-size:11px;color:var(--gr);margin-top:2px}
+
+/* ── FEATURES STRIP ── */
+.features-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:20px;max-width:900px;margin:0 auto}
+.feat-chip{display:flex;align-items:center;gap:6px;background:var(--cbg);border:1px solid var(--cbr);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--grl)}
+.feat-chip svg{flex-shrink:0}
+
+/* ── SECTION ── */
+.section{max-width:960px;margin:0 auto;padding:40px 20px}
+.section-eyebrow{font-size:11px;font-weight:600;color:var(--or);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.section-title{font-size:clamp(30px,5vw,48px);line-height:1;margin-bottom:10px}
+.section-sub{font-size:14px;color:var(--grl);margin-bottom:28px;line-height:1.65;max-width:560px}
+
+/* ── SKILL GRID ── */
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px}
+.skill-card{background:var(--cbg);border:1px solid var(--cbr);border-radius:12px;padding:16px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.skill-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,107,26,.08),transparent);opacity:0;transition:.2s}
+.skill-card:hover::before,.skill-card.active::before{opacity:1}
+.skill-card:hover,.skill-card.active{border-color:var(--or);transform:translateY(-2px)}
+.skill-card.locked{opacity:.65}
+.skill-card.locked .skill-lock{display:flex}
+.skill-lock{display:none;position:absolute;top:10px;right:10px;background:var(--gold);color:#000;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.04em}
+.skill-emoji{font-size:26px;margin-bottom:10px;display:block}
+.skill-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.skill-desc{font-size:11px;color:var(--gr);line-height:1.45}
+.skill-count{font-size:11px;color:var(--or);margin-top:8px;font-weight:500}
+
+/* ── DRILL LIST ── */
+.drill-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px}
+.drill-item{background:var(--cbg);border:1px solid var(--cbr);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;display:flex;gap:12px;align-items:flex-start}
+.drill-item:hover{border-color:var(--or);background:rgba(255,107,26,.06)}
+.drill-item.active{border-color:var(--or);background:rgba(255,107,26,.08)}
+.drill-item.pro-item{opacity:.7}
+.drill-item .di-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--or);min-width:28px;line-height:1}
+.drill-item .di-body h4{font-size:13px;font-weight:600;margin-bottom:3px}
+.drill-item .di-body p{font-size:11px;color:var(--gr);line-height:1.4}
+.drill-item .di-tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.di-tag{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500}
+.tag-beg{background:#1D9E7520;color:#5DCAA5}
+.tag-int{background:rgba(255,107,26,.2);color:var(--orl)}
+.tag-adv{background:rgba(255,40,80,.18);color:#FF6080}
+.tag-pro{background:rgba(255,215,0,.12);color:var(--gold)}
+
+/* ── DRILL DETAIL ── */
+#drill-detail{display:none;background:var(--cbg);border:1px solid var(--cbr);border-radius:16px;padding:24px;margin-bottom:24px}
+.dd-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.dd-title{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;margin-bottom:6px}
+.dd-cat{font-size:12px;color:var(--gr);margin-bottom:4px}
+.dd-tags{display:flex;gap:6px;flex-wrap:wrap}
+.dd-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.meta-box{background:rgba(255,255,255,.04);border-radius:8px;padding:10px;text-align:center}
+.meta-val{font-size:24px;color:var(--or)}
+.meta-label{font-size:10px;color:var(--gr);margin-top:2px}
+.dd-steps{margin-bottom:20px}
+.dd-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.dd-step:last-child{border-bottom:none}
+.ds-num{min-width:26px;height:26px;background:var(--or);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+.ds-txt{font-size:13px;color:var(--grl);line-height:1.6}
+.ds-tip{font-size:11px;color:var(--or);margin-top:3px;font-style:italic}
+.dd-coaching{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.15);border-radius:8px;padding:12px;margin-bottom:20px}
+.dc-label{font-size:10px;font-weight:600;color:var(--gold);letter-spacing:.08em;margin-bottom:6px}
+.dc-text{font-size:13px;color:var(--grl);line-height:1.6}
+.dd-video-placeholder{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:10px;aspect-ratio:16/9;max-width:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:.2s;margin-bottom:20px}
+.dd-video-placeholder:hover{border-color:var(--or)}
+.play-icon{width:48px;height:48px;border-radius:50%;background:rgba(255,107,26,.15);border:1px solid rgba(255,107,26,.3);display:flex;align-items:center;justify-content:center}
+.dd-actions{display:flex;gap:8px;flex-wrap:wrap}
+.dd-btn{flex:1;min-width:120px;padding:11px 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s;text-align:center}
+.dd-btn.primary{background:var(--or);color:#fff}.dd-btn.primary:hover{background:var(--orl)}
+.dd-btn.outline{background:transparent;color:var(--grl);border:1px solid var(--cbr)}.dd-btn.outline:hover{border-color:var(--or);color:var(--or)}
+.dd-btn.save{background:transparent;color:var(--gold);border:1px solid rgba(255,215,0,.2)}.dd-btn.save:hover{background:rgba(255,215,0,.08)}
+
+/* ── TIMER ── */
+.timer-wrap{background:linear-gradient(135deg,rgba(255,107,26,.12),rgba(15,52,96,.3));border:1px solid rgba(255,107,26,.2);border-radius:14px;padding:24px;text-align:center;margin-bottom:16px}
+.phase-label{font-size:11px;font-weight:600;letter-spacing:.1em;margin-bottom:4px;text-transform:uppercase}
+.timer-display{font-size:80px;line-height:1;margin-bottom:4px}
+.timer-display.work{color:var(--or)}
+.timer-display.rest{color:#5DCAA5}
+.timer-display.done{color:var(--gold)}
+.set-indicator{display:flex;justify-content:center;gap:6px;margin-bottom:16px}
+.set-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:.3s}
+.set-dot.active{background:var(--or);transform:scale(1.2)}
+.set-dot.done{background:rgba(255,107,26,.4)}
+.timer-btns{display:flex;gap:8px;justify-content:center}
+.t-btn{padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s}
+.t-btn.go{background:var(--or);color:#fff}.t-btn.go:hover{background:var(--orl)}
+.t-btn.stop{background:rgba(255,255,255,.08);color:var(--grl);border:1px solid var(--cbr)}.t-btn.stop:hover{border-color:var(--grl)}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap{background:var(--cbg);border:1px solid var(--cbr);border-radius:10px;padding:14px;margin-bottom:16px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--gr);margin-bottom:8px}
+.prog-bar{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--gold));border-radius:4px;transition:width .4s ease}
+.streak-days{display:flex;gap:5px;flex-wrap:wrap}
+.s-day{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;border:1px solid var(--cbr);color:var(--gr);background:rgba(255,255,255,.02)}
+.s-day.done{background:var(--or);border-color:var(--or);color:#fff}
+.s-day.today{border-color:var(--or);color:var(--or)}
+
+/* ── WORKOUT BUILDER ── */
+#pg-builder .builder-form{background:var(--cbg);border:1px solid var(--cbr);border-radius:14px;padding:20px;margin-bottom:24px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:14px}
+.form-group label{font-size:11px;font-weight:600;color:var(--gr);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.form-group select,.form-group input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--cbr);color:var(--wh);padding:9px 12px;border-radius:8px;font-size:13px;transition:.2s;-webkit-appearance:none}
+.form-group select:focus,.form-group input:focus{outline:none;border-color:var(--or)}
+.form-group select option{background:var(--ctm)}
+.gen-btn{width:100%;background:var(--or);color:#fff;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover{background:var(--orl)}
+.gen-btn.loading{opacity:.7;pointer-events:none}
+#workout-result{display:none;margin-top:16px}
+.workout-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.workout-header h3{font-family:'Bebas Neue',sans-serif;font-size:28px}
+.wo-meta{display:flex;gap:8px;flex-wrap:wrap}
+.wo-tag{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:500;background:rgba(255,107,26,.12);color:var(--orl)}
+.workout-drill-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:6px;border-left:3px solid var(--or);transition:.2s}
+.workout-drill-row:hover{background:rgba(255,107,26,.06)}
+.wdr-num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--or);min-width:30px}
+.wdr-name{flex:1;font-size:13px;font-weight:600}
+.wdr-detail{font-size:11px;color:var(--gr);margin-top:2px}
+.wdr-time{font-size:12px;color:var(--or);font-weight:600;white-space:nowrap}
+.warm-cool{background:rgba(29,158,117,.06);border-left:3px solid #1D9E75}
+.workout-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+/* ── AI PROGRAM ── */
+.ai-program-section{background:linear-gradient(135deg,rgba(255,107,26,.08),rgba(55,138,221,.06));border:1px solid rgba(255,107,26,.2);border-radius:16px;padding:24px;margin-bottom:24px}
+.ai-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.ai-orb{width:36px;height:36px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#ai-program-output{min-height:80px;font-size:13px;color:var(--grl);line-height:1.7}
+.ai-thinking{display:flex;gap:4px;align-items:center;padding:8px 0}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--or);animation:pulse 1.2s ease-in-out infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+/* ── ANALYTICS ── */
+#pg-analytics .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:28px}
+.stat-card{background:var(--cbg);border:1px solid var(--cbr);border-radius:12px;padding:16px}
+.stat-card .sc-label{font-size:11px;color:var(--gr);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.stat-card .sc-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--or)}
+.stat-card .sc-sub{font-size:11px;color:var(--gr);margin-top:2px}
+.stat-card .sc-trend{font-size:11px;color:#5DCAA5;margin-top:4px;font-weight:500}
+.chart-card{background:var(--cbg);border:1px solid var(--cbr);border-radius:12px;padding:16px;margin-bottom:12px}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--grl)}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bc-bar{width:100%;border-radius:4px 4px 0 0;background:rgba(255,107,26,.3);min-height:4px;transition:.5s;position:relative;overflow:hidden}
+.bc-bar::after{content:'';position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(180deg,rgba(255,107,26,.6),rgba(255,107,26,.2));animation:fillup .6s ease forwards}
+@keyframes fillup{from{height:0%;bottom:0;top:auto}to{height:100%}}
+.bc-bar.today{background:rgba(255,107,26,.7)}
+.bc-label{font-size:9px;color:var(--gr)}
+.skill-radar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.skill-bar-row{display:flex;flex-direction:column;gap:4px}
+.sbr-label{font-size:11px;color:var(--gr);display:flex;justify-content:space-between}
+.sbr-track{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.sbr-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ── LEADERBOARD ── */
+.lb-table{background:var(--cbg);border:1px solid var(--cbr);border-radius:12px;overflow:hidden}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--cbr);transition:.15s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(255,255,255,.02)}
+.lb-row.me{background:rgba(255,107,26,.05)}
+.lb-rank{font-family:'Bebas Neue',sans-serif;font-size:20px;min-width:28px;color:var(--gr)}
+.lb-rank.g{color:var(--gold)}
+.lb-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.lb-info{flex:1}
+.lb-name{font-size:13px;font-weight:600}
+.lb-detail{font-size:11px;color:var(--gr);margin-top:1px}
+.lb-score{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--or)}
+.lb-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,107,26,.1);color:var(--orl);margin-left:6px;white-space:nowrap}
+
+/* ── PRICING ── */
+.pricing-toggle{display:flex;align-items:center;gap:12px;margin-bottom:28px;justify-content:center}
+.toggle-track{position:relative;width:44px;height:24px;background:var(--cbr);border-radius:12px;cursor:pointer;transition:.2s;border:1px solid var(--cbr)}
+.toggle-track.on{background:var(--or)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.toggle-track.on .toggle-knob{left:22px}
+.toggle-label{font-size:13px;color:var(--gr)}
+.toggle-label.active{color:var(--or);font-weight:500}
+.save-badge{font-size:10px;background:rgba(29,158,117,.15);color:#5DCAA5;border:1px solid rgba(29,158,117,.3);padding:2px 8px;border-radius:10px}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:24px}
+.plan-card{background:var(--cbg);border:1px solid var(--cbr);border-radius:16px;padding:22px;position:relative;transition:.2s}
+.plan-card:hover{border-color:rgba(255,107,26,.3)}
+.plan-card.popular{border-color:var(--gold);background:rgba(255,215,0,.03)}
+.plan-popular-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:10px;font-weight:700;padding:3px 14px;border-radius:10px;white-space:nowrap}
+.plan-name{font-family:'Bebas Neue',sans-serif;font-size:26px;margin-bottom:4px}
+.plan-price-row{display:flex;align-items:baseline;gap:4px;margin-bottom:4px}
+.plan-price{font-size:36px;font-weight:700}
+.plan-period{font-size:14px;color:var(--gr)}
+.plan-orig{font-size:12px;color:var(--gr);text-decoration:line-through;margin-left:6px}
+.plan-desc{font-size:12px;color:var(--gr);margin-bottom:16px;line-height:1.55}
+.plan-features{list-style:none;margin-bottom:18px}
+.plan-features li{font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--grl);display:flex;align-items:center;gap:8px}
+.plan-features li:last-child{border-bottom:none}
+.pf-check{width:16px;height:16px;border-radius:50%;background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pf-x{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.4}
+.plan-btn{width:100%;padding:12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s}
+.plan-btn.free{background:var(--cbg);color:var(--wh);border:1px solid var(--cbr)}.plan-btn.free:hover{border-color:var(--or)}
+.plan-btn.pro{background:var(--gold);color:#000}.plan-btn.pro:hover{background:#ffe033}
+.plan-btn.coach{background:var(--or);color:#fff}.plan-btn.coach:hover{background:var(--orl)}
+
+/* ── MODAL / AUTH ── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;padding:16px}
+#modal-overlay.open{display:flex}
+.modal{background:var(--ctm);border:1px solid var(--cbr);border-radius:16px;padding:28px;width:100%;max-width:420px;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--gr);font-size:20px;cursor:pointer;padding:4px;line-height:1}
+.modal-close:hover{color:var(--wh)}
+.modal h2{font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:4px}
+.modal p{font-size:13px;color:var(--gr);margin-bottom:20px}
+.form-field{margin-bottom:14px}
+.form-field label{font-size:11px;font-weight:600;color:var(--gr);letter-spacing:.06em;display:block;margin-bottom:5px;text-transform:uppercase}
+.form-field input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--cbr);color:var(--wh);padding:10px 13px;border-radius:8px;font-size:14px;transition:.2s}
+.form-field input:focus{outline:none;border-color:var(--or)}
+.modal-submit{width:100%;padding:12px;background:var(--or);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px;transition:.2s}
+.modal-submit:hover{background:var(--orl)}
+.modal-switch{text-align:center;margin-top:12px;font-size:13px;color:var(--gr)}
+.modal-switch span{color:var(--or);cursor:pointer;font-weight:500}
+.modal-switch span:hover{text-decoration:underline}
+.modal-error{color:#FF6080;font-size:12px;margin-top:6px;display:none}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--ctm);border:1px solid var(--cbr);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;z-index:600;transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none;max-width:300px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{border-color:rgba(29,158,117,.4);color:#5DCAA5}
+#toast.error{border-color:rgba(255,80,80,.4);color:#FF6080}
+
+/* ── PRO GATE ── */
+.pro-gate{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,107,26,.06));border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:20px;text-align:center;margin-bottom:16px}
+.pro-gate h4{font-family:'Bebas Neue',sans-serif;font-size:24px;margin-bottom:6px;color:var(--gold)}
+.pro-gate p{font-size:13px;color:var(--grl);margin-bottom:14px;line-height:1.6}
+
+/* ── SHARE ── */
+.share-bar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.share-btn{flex:1;min-width:100px;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--cbr);background:transparent;color:var(--grl);transition:.2s;text-align:center}
+.share-btn:hover{border-color:var(--or);color:var(--or)}
+
+/* ── MOBILE ── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,26,.97);border-top:1px solid var(--cbr);padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:150;backdrop-filter:blur(8px)}
+.mobile-nav-items{display:flex;justify-content:space-around}
+.mni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;border-radius:8px;transition:.2s;color:var(--gr);font-size:10px;font-weight:500}
+.mni svg{width:20px;height:20px}
+.mni.active{color:var(--or)}
+.mni .mni-dot{width:4px;height:4px;border-radius:50%;background:var(--or);margin:0 auto;display:none}
+.mni.active .mni-dot{display:block}
+
+@media(max-width:640px){
+  .nav-tabs{display:none}
+  .nav-right .nav-btn:not(.cta){display:none}
+  .mobile-nav{display:block}
+  .page{padding-bottom:72px}
+  .hero h1{font-size:64px}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .dd-meta{grid-template-columns:repeat(2,1fr)}
+  .dd-video-placeholder{max-width:100%}
+  .timer-display{font-size:64px}
+  .plans-grid{grid-template-columns:1fr}
+  .skill-radar{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo" onclick="goTo('home')">Hoop<span>IQ</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab" onclick="goTo('drills')">Drills</button>
+    <button class="nav-tab" onclick="goTo('builder')">Workout</button>
+    <button class="nav-tab" onclick="goTo('analytics')">Progress</button>
+    <button class="nav-tab" onclick="goTo('leaderboard')">Rankings</button>
+    <button class="nav-tab" onclick="goTo('pricing')">Pricing</button>
+  </div>
+  <div class="nav-right">
+    <div id="user-chip" onclick="openModal('profile')">
+      <div id="user-avatar"></div>
+      <span id="user-name-display"></span>
+    </div>
+    <button class="nav-btn" id="nav-login" onclick="openModal('login')">Sign in</button>
+    <button class="nav-btn cta" id="nav-pro" onclick="goTo('pricing')">Go Pro — $9/mo</button>
+  </div>
+</nav>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="page active" id="pg-home">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-pill"><div class="hero-pill-dot"></div>The #1 free basketball skills trainer</div>
+      <h1>TRAIN LIKE<br><span style="color:var(--or)">A PRO</span></h1>
+      <p class="hero-sub">Hundreds of drills, a custom workout builder, an AI training coach, and real progress tracking — all in your browser, free to start.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="goTo('drills')">Start Training Free</button>
+        <button class="btn-secondary" onclick="openModal('signup')">Create Account</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="n">120+</div><div class="l">Total drills</div></div>
+        <div class="hero-stat"><div class="n">45+</div><div class="l">Free drills</div></div>
+        <div class="hero-stat"><div class="n">6</div><div class="l">Skill areas</div></div>
+        <div class="hero-stat"><div class="n">AI</div><div class="l">Training coach</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-strip">
+    <div class="feat-chip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FF6B1A" stroke-width="1.5"/><path d="M5 7l1.5 1.5L9 5" stroke="#FF6B1A" stroke-width="1.5" stroke-linecap="round"/></svg>Built-in rep timer</div>
+    <div class="feat-chip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FF6B1A" stroke-width="1.5"/><path d="M5 7l1.5 1.5L9 5" stroke="#FF6B1A" stroke-width="1.5" stroke-linecap="round"/></svg>AI workout generator</div>
+    <div class="feat-chip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FF6B1A" stroke-width="1.5"/><path d="M5 7l1.5 1.5L9 5" stroke="#FF6B1A" stroke-width="1.5" stroke-linecap="round"/></svg>Streak tracker</div>
+    <div class="feat-chip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FF6B1A" stroke-width="1.5"/><path d="M5 7l1.5 1.5L9 5" stroke="#FF6B1A" stroke-width="1.5" stroke-linecap="round"/></svg>All levels welcome</div>
+    <div class="feat-chip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FF6B1A" stroke-width="1.5"/><path d="M5 7l1.5 1.5L9 5" stroke="#FF6B1A" stroke-width="1.5" stroke-linecap="round"/></svg>No app download</div>
+    <div class="feat-chip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FFD700" stroke-width="1.5"/><path d="M7 4v3l2 1.5" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round"/></svg>Pro: AI 30/60/90-day programs</div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section" style="padding-top:16px">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-title">THREE STEPS TO<br><span style="color:var(--or)">BETTER GAME</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px">
+      <div style="background:var(--cbg);border:1px solid var(--cbr);border-radius:14px;padding:20px">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,107,26,.15);border:1px solid rgba(255,107,26,.25);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--or);margin-bottom:12px">1</div>
+        <h3 style="font-size:16px;margin-bottom:6px">Pick your drill</h3>
+        <p style="font-size:13px;color:var(--gr);line-height:1.6">Browse 120+ drills across 6 skill categories. Filter by level and see step-by-step coaching instructions.</p>
+      </div>
+      <div style="background:var(--cbg);border:1px solid var(--cbr);border-radius:14px;padding:20px">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,107,26,.15);border:1px solid rgba(255,107,26,.25);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--or);margin-bottom:12px">2</div>
+        <h3 style="font-size:16px;margin-bottom:6px">Hit the timer</h3>
+        <p style="font-size:13px;color:var(--gr);line-height:1.6">The built-in work/rest timer guides every set. No guessing. Focus on your reps while we handle the clock.</p>
+      </div>
+      <div style="background:var(--cbg);border:1px solid var(--cbr);border-radius:14px;padding:20px">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,107,26,.15);border:1px solid rgba(255,107,26,.25);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--or);margin-bottom:12px">3</div>
+        <h3 style="font-size:16px;margin-bottom:6px">Track your growth</h3>
+        <p style="font-size:13px;color:var(--gr);line-height:1.6">Your streak, workouts completed, and skill ratings update automatically. See your game improve over time.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DRILLS ═══════════════ -->
+<div class="page" id="pg-drills">
+  <div class="section">
+    <div class="section-eyebrow">Skill library</div>
+    <h2 class="section-title">PICK YOUR <span style="color:var(--or)">SKILL</span></h2>
+    <p class="section-sub">Tap a category then choose a drill. Free users get full access to all fundamentals.</p>
+    <div class="skill-grid" id="skill-grid"></div>
+    <div id="drill-list-wrap" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <h3 id="cat-title" style="font-family:'Bebas Neue',sans-serif;font-size:28px"></h3>
+        <div style="display:flex;gap:6px">
+          <button style="padding:6px 12px;border-radius:6px;font-size:12px;border:1px solid var(--cbr);background:transparent;color:var(--gr);cursor:pointer" onclick="filterDrills('all')" id="f-all" class="">All</button>
+          <button style="padding:6px 12px;border-radius:6px;font-size:12px;border:1px solid var(--cbr);background:transparent;color:var(--gr);cursor:pointer" onclick="filterDrills('Beginner')" id="f-beg">Beginner</button>
+          <button style="padding:6px 12px;border-radius:6px;font-size:12px;border:1px solid var(--cbr);background:transparent;color:var(--gr);cursor:pointer" onclick="filterDrills('Intermediate')" id="f-int">Intermediate</button>
+          <button style="padding:6px 12px;border-radius:6px;font-size:12px;border:1px solid var(--cbr);background:transparent;color:var(--gr);cursor:pointer" onclick="filterDrills('Advanced')" id="f-adv">Advanced</button>
+        </div>
+      </div>
+      <div class="drill-list" id="drill-list"></div>
+    </div>
+    <div id="drill-detail">
+      <div class="dd-header">
+        <div>
+          <div class="dd-cat" id="dd-cat"></div>
+          <div class="dd-title" id="dd-title"></div>
+          <div class="dd-tags" id="dd-tags"></div>
+        </div>
+        <div class="dd-video-placeholder" id="dd-video" onclick="showVideoMsg()">
+          <div class="play-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l6 4-6 4V4z" fill="#FF6B1A"/></svg></div>
+          <div style="font-size:12px;color:var(--gr)">Watch demo</div>
+          <div style="font-size:10px;color:var(--gr)">Pro feature</div>
+        </div>
+      </div>
+      <div class="dd-meta">
+        <div class="meta-box"><div class="meta-val" id="dd-sets"></div><div class="meta-label">Sets</div></div>
+        <div class="meta-box"><div class="meta-val" id="dd-work"></div><div class="meta-label">Work</div></div>
+        <div class="meta-box"><div class="meta-val" id="dd-rest"></div><div class="meta-label">Rest</div></div>
+        <div class="meta-box"><div class="meta-val" id="dd-focus"></div><div class="meta-label">Focus</div></div>
+      </div>
+      <div class="dd-coaching" id="dd-coaching">
+        <div class="dc-label">COACHING CUE</div>
+        <div class="dc-text" id="dd-cue"></div>
+      </div>
+      <div class="dd-steps" id="dd-steps"></div>
+      <div class="timer-wrap">
+        <div class="phase-label" id="phase-label" style="color:var(--or)">READY</div>
+        <div class="timer-display" id="timer-display">00:30</div>
+        <div class="set-indicator" id="set-indicator"></div>
+        <div class="timer-btns">
+          <button class="t-btn go" id="timer-btn" onclick="toggleTimer()">Start</button>
+          <button class="t-btn stop" onclick="resetTimer()">Reset</button>
+          <button class="t-btn stop" onclick="nextDrill()">Next Drill →</button>
+        </div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Session progress</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div style="font-size:12px;color:var(--gr);margin-bottom:6px;margin-top:8px">Your weekly streak</div>
+        <div class="streak-days" id="streak-days"></div>
+      </div>
+      <div class="dd-actions">
+        <button class="dd-btn primary" onclick="nextDrill()">Next Drill →</button>
+        <button class="dd-btn save" onclick="saveDrill()" id="save-btn">Save Drill</button>
+        <button class="dd-btn outline" onclick="shareDrill()">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ BUILDER ═══════════════ -->
+<div class="page" id="pg-builder">
+  <div class="section">
+    <div class="section-eyebrow">Custom workouts</div>
+    <h2 class="section-title">BUILD YOUR <span style="color:var(--or)">WORKOUT</span></h2>
+    <p class="section-sub">Tell us your goals and available time. We build a complete session instantly — or use the AI coach for a personalized 30-day program.</p>
+
+    <div class="builder-form">
+      <div class="form-grid">
+        <div class="form-group"><label>Skill level</label>
+          <select id="b-level"><option value="Beginner">Beginner</option><option value="Intermediate" selected>Intermediate</option><option value="Advanced">Advanced</option></select></div>
+        <div class="form-group"><label>Time available</label>
+          <select id="b-time"><option>15 minutes</option><option selected>30 minutes</option><option>45 minutes</option><option>60 minutes</option></select></div>
+        <div class="form-group"><label>Focus area</label>
+          <select id="b-focus"><option>Ball handling</option><option>Shooting</option><option>Full game</option><option>Defense</option><option>Finishing</option><option>Conditioning</option></select></div>
+        <div class="form-group"><label>Equipment</label>
+          <select id="b-equip"><option>Ball only</option><option>Ball + cones</option><option>Full gym</option></select></div>
+      </div>
+      <button class="gen-btn" onclick="generateWorkout()" id="gen-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v3M8 11v3M2 8h3M11 8h3M4 4l2 2M10 10l2 2M4 12l2-2M10 6l2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Generate Workout
+      </button>
+      <div id="workout-result"></div>
+    </div>
+
+    <!-- AI PROGRAM GENERATOR -->
+    <div class="ai-program-section">
+      <div class="ai-header">
+        <div class="ai-orb"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C5.13 2 2 5.13 2 9s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm-1-8v4l3 1.5-.75 1.23L7 11V6h1z" fill="#fff"/></svg></div>
+        <div>
+          <div style="font-size:15px;font-weight:600">AI Training Coach</div>
+          <div style="font-size:12px;color:var(--gr)">Get a personalized 30-day program built for your goals</div>
+        </div>
+        <span class="badge badge-pro" style="margin-left:auto">PRO</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <input id="ai-goal" placeholder="e.g. Improve my crossover for tryouts in 4 weeks..." style="flex:1;min-width:200px;background:rgba(255,255,255,.05);border:1px solid var(--cbr);color:var(--wh);padding:9px 13px;border-radius:8px;font-size:13px">
+        <button style="padding:9px 18px;background:var(--or);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap" onclick="generateAIProgram()">Generate Program →</button>
+      </div>
+      <div id="ai-program-output" style="font-size:13px;color:var(--gr);font-style:italic">Enter your goal above and the AI coach will build a personalized training program for you.</div>
+    </div>
+
+    <!-- SAVED WORKOUTS -->
+    <div style="margin-bottom:20px">
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:26px;margin-bottom:14px">SAVED WORKOUTS</h3>
+      <div id="saved-workouts-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ANALYTICS ═══════════════ -->
+<div class="page" id="pg-analytics">
+  <div class="section">
+    <div class="section-eyebrow">Your progress</div>
+    <h2 class="section-title">TRACK YOUR <span style="color:var(--or)">GROWTH</span></h2>
+    <p class="section-sub">Every drill you complete builds your profile. Sign in to save progress across sessions.</p>
+
+    <div class="stat-grid" id="analytics-stats"></div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:24px">
+      <div class="chart-card">
+        <div class="chart-title">Workouts this week</div>
+        <div class="bar-chart" id="weekly-chart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Skill ratings</div>
+        <div class="skill-radar" id="skill-radar"></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:24px;margin-bottom:14px">RECENT ACTIVITY</h3>
+      <div id="activity-feed"></div>
+    </div>
+
+    <div style="background:var(--cbg);border:1px solid var(--cbr);border-radius:12px;padding:16px;margin-bottom:20px">
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;margin-bottom:4px">ACHIEVEMENTS</h3>
+      <p style="font-size:12px;color:var(--gr);margin-bottom:14px">Unlock badges as you train</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap" id="achievements"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LEADERBOARD ═══════════════ -->
+<div class="page" id="pg-leaderboard">
+  <div class="section">
+    <div class="section-eyebrow">Community</div>
+    <h2 class="section-title">GLOBAL <span style="color:var(--or)">RANKINGS</span></h2>
+    <p class="section-sub">Compete with players everywhere. Your rank updates every time you complete a drill.</p>
+    <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+      <button style="padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid var(--or);background:rgba(255,107,26,.1);color:var(--or);cursor:pointer" onclick="setLbFilter('global')" id="lb-global">Global</button>
+      <button style="padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;border:1px solid var(--cbr);background:transparent;color:var(--gr);cursor:pointer" onclick="setLbFilter('weekly')" id="lb-weekly">This week</button>
+      <button style="padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;border:1px solid var(--cbr);background:transparent;color:var(--gr);cursor:pointer" onclick="setLbFilter('charlotte')" id="lb-charlotte">Charlotte area</button>
+    </div>
+    <div class="lb-table" id="lb-table"></div>
+    <div style="text-align:center;margin-top:14px;padding:16px;background:var(--cbg);border-radius:10px">
+      <div style="font-size:13px;color:var(--gr);margin-bottom:8px">Sign up free to claim your spot on the leaderboard</div>
+      <button class="btn-primary" style="padding:10px 24px;font-size:14px" onclick="openModal('signup')">Join the Rankings →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PRICING ═══════════════ -->
+<div class="page" id="pg-pricing">
+  <div class="section">
+    <div class="section-eyebrow">Simple pricing</div>
+    <h2 class="section-title">LEVEL UP YOUR <span style="color:var(--or)">GAME</span></h2>
+    <p class="section-sub">Free forever for fundamentals. Go Pro to unlock everything and take your training seriously.</p>
+
+    <div class="pricing-toggle flex items-center gap12 text-center" style="margin-bottom:24px;justify-content:center">
+      <span class="toggle-label active" id="monthly-label">Monthly</span>
+      <div class="toggle-track" id="billing-toggle" onclick="toggleBilling()"><div class="toggle-knob"></div></div>
+      <span class="toggle-label" id="annual-label">Annual</span>
+      <span class="save-badge" id="save-badge">Save 40%</span>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price-row"><span class="plan-price">$0</span><span class="plan-period">/ forever</span></div>
+        <p class="plan-desc">Everything you need to get started and build real fundamentals.</p>
+        <ul class="plan-features">
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>45+ fundamental drills</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Built-in rep/rest timer</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Workout generator (basic)</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>7-day streak tracker</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Leaderboard access</li>
+          <li><div class="pf-x"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 2l4 4M6 2l-4 4" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg></div><span style="opacity:.5">120+ pro drills</span></li>
+          <li><div class="pf-x"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 2l4 4M6 2l-4 4" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg></div><span style="opacity:.5">AI training programs</span></li>
+          <li><div class="pf-x"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 2l4 4M6 2l-4 4" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg></div><span style="opacity:.5">Video demonstrations</span></li>
+        </ul>
+        <button class="plan-btn free" onclick="goTo('drills')">Start Free</button>
+      </div>
+
+      <div class="plan-card popular">
+        <div class="plan-popular-tag">Most popular</div>
+        <div class="plan-name" style="color:var(--gold)">Pro</div>
+        <div class="plan-price-row">
+          <span class="plan-price" id="pro-price">$9</span>
+          <span class="plan-period" id="pro-period">/ month</span>
+          <span class="plan-orig" id="pro-orig" style="display:none">$9/mo</span>
+        </div>
+        <p class="plan-desc">Everything you need to train seriously, track real progress, and improve fast.</p>
+        <ul class="plan-features">
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Everything in Free</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>120+ pro drills unlocked</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>AI-generated training programs</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Video drill demonstrations</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Unlimited saved workouts</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Advanced analytics + charts</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Leaderboard rankings + badges</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>7-day free trial</li>
+        </ul>
+        <button class="plan-btn pro" onclick="signupForPro()">Start 7-Day Free Trial</button>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-name">Coach</div>
+        <div class="plan-price-row">
+          <span class="plan-price" id="coach-price">$29</span>
+          <span class="plan-period" id="coach-period">/ month</span>
+        </div>
+        <p class="plan-desc">Built for trainers, coaches, and AAU programs managing multiple athletes.</p>
+        <ul class="plan-features">
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Everything in Pro</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Up to 25 athlete profiles</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Assign workouts to players</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Team analytics dashboard</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Custom drill creator</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Printable workout sheets</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>White-label your branding</li>
+          <li><div class="pf-check"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4l2 2 3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>Priority support</li>
+        </ul>
+        <button class="plan-btn coach" onclick="signupForCoach()">Start Coach Plan</button>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:13px;color:var(--gr)">Cancel anytime. No contracts. All plans include a 7-day free trial.</p>
+
+    <!-- FAQ -->
+    <div style="margin-top:40px;max-width:640px;margin-left:auto;margin-right:auto">
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:20px;text-align:center">COMMON QUESTIONS</h3>
+      <div id="faq-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-items">
+    <div class="mni active" id="mni-home" onclick="goTo('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home<div class="mni-dot"></div></div>
+    <div class="mni" id="mni-drills" onclick="goTo('drills')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Drills<div class="mni-dot"></div></div>
+    <div class="mni" id="mni-builder" onclick="goTo('builder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>Workout<div class="mni-dot"></div></div>
+    <div class="mni" id="mni-analytics" onclick="goTo('analytics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Progress<div class="mni-dot"></div></div>
+    <div class="mni" id="mni-pricing" onclick="goTo('pricing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Pro<div class="mni-dot"></div></div>
+  </div>
+</nav>
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="closeModalOnOutside(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const DRILLS = {
+  ball:{label:"Ball Handling",emoji:"⚡",desc:"Dribbling, crossovers, hesitations",free:12,pro:18,drills:[
+    {id:"b1",name:"POUND DRIBBLE SERIES",level:"Beginner",sets:4,work:30,rest:15,focus:"Control",free:true,
+     cue:"Eyes up the entire time. Your fingertips control the ball, never your palm. Lower the dribble below the knee.",
+     steps:[
+       {t:"Start in athletic stance — knees bent, back straight, weight on balls of feet",tip:"Think: ready to jump at any moment"},
+       {t:"Pound dribble right hand only, keeping ball below your knee height",tip:"Hard, aggressive dribbles — not soft taps"},
+       {t:"Switch to left hand on the beep — match the same intensity and height",tip:"Your weak hand needs double the reps"},
+       {t:"Add a crossover between each 10-rep series",tip:"Low and quick across — not high and slow"},
+       {t:"Progress: cover your eyes and feel the ball by touch alone",tip:"Elite handles happen without looking"}
+     ]},
+    {id:"b2",name:"TWO-BALL STATIONARY",level:"Intermediate",sets:3,work:45,rest:20,focus:"Coordination",free:true,
+     cue:"The two-ball drill exposes your weak hand immediately. Don't rush — find the rhythm before adding speed.",
+     steps:[
+       {t:"Hold one ball in each hand at hip height in athletic stance"},
+       {t:"Dribble both balls simultaneously — same rhythm, same height"},
+       {t:"Switch to alternating: right ball up as left ball down"},
+       {t:"Combo: 10 simultaneous, 10 alternating — keep eyes forward"},
+       {t:"Advanced: add a small crossover on both balls at the same time",tip:"Only attempt after mastering the basics"}
+     ]},
+    {id:"b3",name:"CROSSOVER SERIES",level:"Beginner",sets:5,work:30,rest:15,focus:"Attack",free:true,
+     cue:"The crossover is about selling the fake, not speed. Make the defender commit with your eyes and body before you cross.",
+     steps:[
+       {t:"Simple crossover right-to-left — low, quick, and protected"},
+       {t:"Add a hesitation dribble before the cross: stutter, then explode"},
+       {t:"Progress to between-the-legs crossover"},
+       {t:"Chain them: crossover → between legs → behind back",tip:"3-part combo is game-ready"},
+       {t:"Finish with one hard attack dribble toward the basket"}
+     ]},
+    {id:"b4",name:"FIGURE 8 DRIBBLE",level:"Beginner",sets:3,work:40,rest:15,focus:"Coordination",free:true,
+     cue:"Keep your back straight — this drill will expose it if you hunch. The figure-8 builds ambidexterity better than almost any other drill.",
+     steps:[
+       {t:"Feet wider than shoulder-width, deep knee bend"},
+       {t:"Weave the ball through your legs: right hand passes to left, left passes to right"},
+       {t:"Keep the ball low — never above your shins"},
+       {t:"Speed up gradually while maintaining clean hand-offs"},
+       {t:"Reverse direction every 10 reps without stopping"}
+     ]},
+    {id:"b5",name:"CONE WEAVE DRIBBLE",level:"Intermediate",sets:4,work:60,rest:20,focus:"Speed",free:true,
+     cue:"Attack each cone like a defender. Your change of direction should be sharp, not looping.",
+     steps:[
+       {t:"Set 5 cones in a straight line, 3 feet apart"},
+       {t:"Weave through the cones using your outside hand at each cone"},
+       {t:"Change hands on every cone — right going right, left going left"},
+       {t:"Sprint return, no dribble — jog back and repeat"},
+       {t:"Advanced: add a finishing layup at the end of each run"}
+     ]},
+    {id:"b6",name:"SPIDER DRIBBLE",level:"Advanced",sets:3,work:60,rest:25,focus:"Touch",free:false,
+     cue:"The spider drill is all about soft, controlled taps. It's a touch drill, not a power drill.",
+     steps:[
+       {t:"Ball on the floor in front of you, both hands on top"},
+       {t:"Tap the ball front-right, front-left, back-right, back-left — one hand at a time"},
+       {t:"Progress to doing it backwards"},
+       {t:"Add a full rotation: front, right, back, left all the way around"},
+       {t:"Speed is secondary to clean hand placement"}
+     ]},
+    {id:"b7",name:"BEHIND-BACK SERIES",level:"Advanced",sets:4,work:45,rest:20,focus:"Evasion",free:false,
+     cue:"The behind-the-back is used to protect the ball from a reaching defender, not to show off. Learn the purpose first.",
+     steps:[
+       {t:"Stationary: swing the ball behind your back from right to left hand"},
+       {t:"Add one dribble: right hand dribble → behind back → left hand catches"},
+       {t:"Walking pace: dribble two steps, then execute behind-back transfer"},
+       {t:"Full speed: incorporate into your normal dribble series"},
+       {t:"Combo: crossover → behind back → between legs in one motion"}
+     ]},
+    {id:"b8",name:"HESITATION ATTACK",level:"Intermediate",sets:5,work:45,rest:15,focus:"Deception",free:true,
+     cue:"The hesitation is 80% mental — you're convincing the defender your drive is over before you explode past them.",
+     steps:[
+       {t:"Drive hard toward the basket in a straight line"},
+       {t:"At half-speed, pump your brake: slow your dribble, stand taller, look away"},
+       {t:"When the defender freezes or steps back — explode past them"},
+       {t:"Practice the hesitation at different speeds",tip:"Vary the pause length to keep defenders guessing"},
+       {t:"Add a pull-up jumper or euro step at the finish"}
+     ]},
+  ]},
+  shooting:{label:"Shooting",emoji:"🎯",desc:"Form, catch-and-shoot, off-dribble",free:10,pro:22,drills:[
+    {id:"s1",name:"FORM SHOOTING — 3 SPOTS",level:"Beginner",sets:3,work:60,rest:20,focus:"Mechanics",free:true,
+     cue:"One hand only to start. Your shooting motion should be a straight line from your hip to your release point. Any deviation is a flaw to fix.",
+     steps:[
+       {t:"5 feet from basket, directly in front — shooting hand only",tip:"Build the foundation before adding your guide hand"},
+       {t:"Find your set point: ball at chin or shoulder, elbow under the ball"},
+       {t:"Extend straight up and snap your wrist — hold the follow-through"},
+       {t:"Add your guide hand — it guides, never pushes"},
+       {t:"Move to right block, then left block — same form at each spot"}
+     ]},
+    {id:"s2",name:"MIKAN DRILL",level:"Beginner",sets:3,work:60,rest:15,focus:"Finishing",free:true,
+     cue:"No dribbles allowed. This is a footwork and touch drill. If you're dribbling, you're doing it wrong.",
+     steps:[
+       {t:"Start on the right block, one step from the basket"},
+       {t:"Right-hand layup off the board — catch it before it touches the floor"},
+       {t:"One step to the left block, left-hand layup"},
+       {t:"Continue alternating without stopping — the rhythm is the drill"},
+       {t:"Reverse Mikan: shoot from behind the backboard side"}
+     ]},
+    {id:"s3",name:"CATCH AND SHOOT — CORNERS",level:"Intermediate",sets:4,work:45,rest:20,focus:"Readiness",free:true,
+     cue:"Your feet should be set before the catch. Catch and shoot is not catch, then set your feet, then shoot. It's all one motion.",
+     steps:[
+       {t:"Set a chair or cone at each corner of the 3-point line"},
+       {t:"Jog to the left corner, simulate receiving a pass (ball off floor), shoot"},
+       {t:"Hustle to right corner — same motion",tip:"Sprint between spots — game speed or go home"},
+       {t:"Feet must be square to the basket before the catch arrives"},
+       {t:"Goal: 8 of 10 made before moving on"}
+     ]},
+    {id:"s4",name:"SPOT UP SHOOTING",level:"Beginner",sets:5,work:90,rest:20,focus:"Volume",free:true,
+     cue:"Track your makes and misses honestly. Volume without accountability is just exercise, not skill development.",
+     steps:[
+       {t:"Mark 5 spots: both corners, both wings, top of the key"},
+       {t:"5 shots at each spot before moving — track every make/miss"},
+       {t:"Move clockwise around the arc every set"},
+       {t:"Record your total: 25 attempts per set. Track progress weekly"},
+       {t:"Advanced: add a shot fake before each attempt"}
+     ]},
+    {id:"s5",name:"PULL-UP MID-RANGE",level:"Intermediate",sets:4,work:60,rest:20,focus:"Off-dribble",free:true,
+     cue:"The pull-up requires a two-foot stop. If your footwork is messy, the shot will be messy. Get the gather right.",
+     steps:[
+       {t:"Drive hard right toward the elbow (right side of free throw line)"},
+       {t:"Two-foot gather — set your feet on the stop",tip:"Jump stop, not a one-two slide"},
+       {t:"Rise straight up — don't fade unless intentional"},
+       {t:"Mirror on the left side: 5 reps right, 5 reps left"},
+       {t:"Add a jab step before the drive to simulate game movement"}
+     ]},
+    {id:"s6",name:"FREE THROW ROUTINE",level:"Beginner",sets:2,work:120,rest:30,focus:"Consistency",free:true,
+     cue:"Your free throw routine is a psychological reset. Every single rep must use the exact same routine — dribbles, breath, focal point.",
+     steps:[
+       {t:"Establish your routine: 2 dribbles, deep breath, find your focal point on the rim"},
+       {t:"Shoot 10 free throws — log makes",tip:"The front of the rim is the most common focal point"},
+       {t:"After each miss: reset completely, don't rush the next shot"},
+       {t:"Mental: treat free throws in practice like they win the game"},
+       {t:"Shoot 10 again — compare totals. Routine consistency shows up in the data"}
+     ]},
+    {id:"s7",name:"STEP-BACK 3-POINTER",level:"Advanced",sets:4,work:60,rest:25,focus:"Off-dribble",free:false,
+     cue:"The step-back creates the space — the shot still has to be perfect. Don't sacrifice mechanics for the move.",
+     steps:[
+       {t:"Drive right hard — draw the defender into your space"},
+       {t:"Hard crossover dribble, then a backward hop to create separation"},
+       {t:"Land balanced on both feet, already in your shooting stance"},
+       {t:"Rise and fire — the timing of the jump off the hop is the skill",tip:"Too early = off-balance. Too late = defender closes out"},
+       {t:"Practice at various distances and angles"}
+     ]},
+    {id:"s8",name:"OFF-SCREEN SHOOTING",level:"Advanced",sets:4,work:60,rest:20,focus:"Actions",free:false,
+     cue:"Reading the screen is as important as the shot itself. You need to know before you curl whether you're shooting, driving, or flaring.",
+     steps:[
+       {t:"Set a chair as the screener at the elbow"},
+       {t:"Curl tight off the screen — shoulder to hip — toward the basket for mid-range"},
+       {t:"Pop to the 3-point line for the catch-and-shoot option"},
+       {t:"Fade away from the screen for the back-door cut",tip:"Change it up every rep — don't be predictable"},
+       {t:"Final rep: read the 'defense' (cone or partner) and react accordingly"}
+     ]},
+  ]},
+  finishing:{label:"Finishing",emoji:"🔥",desc:"Layups, floaters, contact",free:8,pro:14,drills:[
+    {id:"f1",name:"EURO STEP LAYUP",level:"Intermediate",sets:4,work:60,rest:20,focus:"Evasion",free:true,
+     cue:"The euro step is not a travel. The gather step is step one, the step to the other side is step two. Two steps, one side each.",
+     steps:[
+       {t:"Drive right hard, gather at the first step outside the paint"},
+       {t:"Right foot plants (step 1), push off right to cross to the left of the lane"},
+       {t:"Left foot plants (step 2) — push off for the left-hand layup",tip:"The step covers ground — make the defender bite"},
+       {t:"Reverse: drive left, euro step right, right-hand layup"},
+       {t:"Add a cone at the free throw line as a simulated help defender"}
+     ]},
+    {id:"f2",name:"FLOATER SERIES",level:"Intermediate",sets:3,work:60,rest:25,focus:"Touch",free:true,
+     cue:"The floater is a one-motion release — gather and immediately shoot upward. Any hesitation kills the timing.",
+     steps:[
+       {t:"Drive right from the wing toward the paint"},
+       {t:"One-two gather inside the paint — do not pump fake",tip:"The floater is a surprise weapon, not a set piece"},
+       {t:"Release the ball high with a soft arc — think 'touch off the backboard'"},
+       {t:"Left side: drive left, right-hand floater"},
+       {t:"Advanced: floater off one foot for extended range"}
+     ]},
+    {id:"f3",name:"REVERSE LAYUP SERIES",level:"Beginner",sets:3,work:60,rest:15,focus:"Touch",free:true,
+     cue:"Use the rim as your shield. The reverse layup protects the ball from the shot blocker on the help side.",
+     steps:[
+       {t:"Approach from the right baseline — drive toward the basket"},
+       {t:"Continue past the front of the rim to the other side"},
+       {t:"Use your left hand to lay the ball up off the far side of the board",tip:"The board protects the shot — aim for the top corner"},
+       {t:"Repeat from the left baseline using your right hand"},
+       {t:"Add a drop step: catch the ball on the block, pivot, reverse layup"}
+     ]},
+    {id:"f4",name:"CONTACT FINISHING",level:"Advanced",sets:3,work:90,rest:30,focus:"Strength",free:false,
+     cue:"Contact finishing is mental as much as physical. You must want the foul, not avoid it.",
+     steps:[
+       {t:"Partner stands at the rim with a pad — they apply light resistance on your drive"},
+       {t:"Drive into contact, maintain your footwork through the bump"},
+       {t:"Finish the shot AND draw the foul — don't choose one or the other"},
+       {t:"Increase contact intensity as confidence builds"},
+       {t:"Film yourself: if your arm changes on contact, your form breaks under pressure"}
+     ]},
+    {id:"f5",name:"FINGER ROLL LAYUP",level:"Beginner",sets:3,work:45,rest:15,focus:"Touch",free:true,
+     cue:"Roll the ball off your fingertips, not your palm. Imagine placing the ball on a shelf above the rim.",
+     steps:[
+       {t:"Start 3 feet from the basket on the right side"},
+       {t:"Two-step approach: right foot, left foot"},
+       {t:"Extend your right arm fully — roll the ball off your index finger",tip:"Slow motion first — find the touch before adding speed"},
+       {t:"Practice off the glass at first, then clean shots"},
+       {t:"Left hand: same drill, opposite side"}
+     ]},
+  ]},
+  defense:{label:"Defense",emoji:"🛡",desc:"Footwork, positioning, closeouts",free:6,pro:12,drills:[
+    {id:"d1",name:"DEFENSIVE SLIDE SERIES",level:"Beginner",sets:4,work:40,rest:15,focus:"Footwork",free:true,
+     cue:"Never cross your feet on a defensive slide. Stay low the entire time — the moment you stand up, you're beat.",
+     steps:[
+       {t:"Defensive stance: knees bent deep, butt down, arms out wide"},
+       {t:"Slide right 5 big steps — push off the left foot, land on the right",tip:"The push foot does the work, the lead foot just lands"},
+       {t:"Chop your feet to stop — do not cross"},
+       {t:"Change direction immediately and slide left 5 steps"},
+       {t:"Finish each set with a sprint-out closeout to simulate a real possession"}
+     ]},
+    {id:"d2",name:"CLOSEOUT DRILL",level:"Intermediate",sets:4,work:45,rest:20,focus:"Closeout",free:true,
+     cue:"A good closeout is a controlled sprint followed by a hard chop. Flying by is as bad as not getting there.",
+     steps:[
+       {t:"Start under the basket. Partner or cone at the 3-point line with ball"},
+       {t:"On the ball movement: sprint hard toward the shooter"},
+       {t:"At 2 steps from the shooter: chop feet, lower your center of gravity",tip:"Short, quick steps — like you're stopping on ice"},
+       {t:"Land in defensive stance: hand up to contest, feet ready to slide"},
+       {t:"Advanced: partner pump fakes — stay down and recover"}
+     ]},
+    {id:"d3",name:"DROP STEP DEFENSE",level:"Intermediate",sets:3,work:60,rest:25,focus:"Post D",free:true,
+     cue:"Stay between your opponent and the basket at all times. Your position before the drive determines the outcome.",
+     steps:[
+       {t:"Set up in front of a partner in the post area"},
+       {t:"Partner ball-fakes and uses a drop step — you must move your feet, not your hands"},
+       {t:"Mirror their hips, not the ball",tip:"Watch the belly button — it can't fake you out"},
+       {t:"Practice both left and right drop step reads"},
+       {t:"Add a contest at the finish: no hacking, contest only"}
+     ]},
+    {id:"d4",name:"BALL PRESSURE DRILL",level:"Beginner",sets:4,work:30,rest:15,focus:"On-ball D",free:true,
+     cue:"Active hands do not mean flailing. Your hands should be in the passing lane or mirroring the ball — not swinging randomly.",
+     steps:[
+       {t:"Partner dribbles in place. You are in defensive stance in front of them"},
+       {t:"Mirror the ball: one hand mirroring the dribble, one hand in the passing lane"},
+       {t:"When they go left, you go left — stay in front at all times"},
+       {t:"Do not reach — stay disciplined for 30 full seconds",tip:"One reach costs you an easy bucket. Stay home."},
+       {t:"Advanced: partner adds crossovers and hesitations"}
+     ]},
+  ]},
+  athleticism:{label:"Athleticism",emoji:"💪",desc:"Speed, vertical, agility",free:0,pro:16,drills:[
+    {id:"a1",name:"LANE AGILITY DRILL",level:"Beginner",sets:5,work:30,rest:30,focus:"Quickness",free:false,
+     cue:"This is the same test used at the NBA Combine. Time yourself and track your progress weekly.",
+     steps:[
+       {t:"Set cones at the four corners of the lane (paint area)"},
+       {t:"Start at bottom right — sprint to top right corner"},
+       {t:"Shuffle left to top left corner"},
+       {t:"Sprint down to bottom left — shuffle right to start",tip:"Touch each cone — don't cut corners"},
+       {t:"Rest the same amount of time as your work interval"}
+     ]},
+    {id:"a2",name:"BOX JUMPS — VERTICAL",level:"Intermediate",sets:4,work:45,rest:30,focus:"Explosion",free:false,
+     cue:"Quality over quantity. 5 perfect, explosive reps are better than 20 sloppy ones.",
+     steps:[
+       {t:"Stand 1-2 feet from a sturdy box or raised surface"},
+       {t:"Swing your arms down, load your hips, and explode up"},
+       {t:"Land softly on both feet in an athletic position",tip:"If your landing is loud, you're absorbing force wrong"},
+       {t:"Step down — never jump down — and immediately reset"},
+       {t:"Add a directional element: jump, pivot, return"}
+     ]},
+    {id:"a3",name:"SPEED LADDER — QUICK FEET",level:"Beginner",sets:4,work:60,rest:20,focus:"Quickness",free:false,
+     cue:"Speed ladders train your nervous system, not your muscles. Light feet, fast feet.",
+     steps:[
+       {t:"Set an agility ladder flat on the ground"},
+       {t:"Two-in, two-out: both feet enter each box, both exit laterally"},
+       {t:"Icky shuffle: in, in, out one side, back in, in, out other side"},
+       {t:"Single-leg hops down the ladder — right leg, then left leg",tip:"Stay on the balls of your feet throughout"},
+       {t:"Backward run through the ladder — builds different neural pathways"}
+     ]},
+  ]},
+  iq:{label:"Basketball IQ",emoji:"🧠",desc:"Reads, passing, court vision",free:0,pro:18,drills:[
+    {id:"q1",name:"3-MAN WEAVE",level:"Intermediate",sets:4,work:90,rest:30,focus:"Passing",free:false,
+     cue:"The 3-man weave is 50% timing and 50% passing. The ball should never stop moving — not even for a second.",
+     steps:[
+       {t:"Three players line up at halfcourt — you in the middle with the ball"},
+       {t:"Pass to the right player, cut behind them to the right side of the court"},
+       {t:"Right player passes to the left player (now in the middle), cuts behind"},
+       {t:"Continue weaving until someone finishes at the rim",tip:"No dribbles — passes only until the final layup"},
+       {t:"Reverse: come back the other way immediately"}
+     ]},
+    {id:"q2",name:"TWO-BALL PASSING",level:"Advanced",sets:3,work:60,rest:20,focus:"Vision",free:false,
+     cue:"Two-ball passing forces your eyes to anticipate rather than react. This is a training tool for elite court vision.",
+     steps:[
+       {t:"Partner stands 10 feet away. Both players hold a ball"},
+       {t:"Simultaneously pass to each other — same time, not alternating"},
+       {t:"Progress to different pass types: chest, bounce, overhead"},
+       {t:"Add movement: side-shuffle while passing",tip:"Communication is the invisible skill here — eye contact, timing"},
+       {t:"Mix pass types: one player chest passes, the other bounce passes"}
+     ]},
+    {id:"q3",name:"READ AND REACT DRILL",level:"Advanced",sets:3,work:90,rest:30,focus:"Decision",free:false,
+     cue:"Basketball is mostly decision-making. Train your reads, not just your moves.",
+     steps:[
+       {t:"Set up a 2-on-2 or 3-on-2 scenario with cones as defenders"},
+       {t:"Drive toward the 'defender' — read: does it step up? Kick out or attack"},
+       {t:"If they stay: attack. If they help: kick to the corner"},
+       {t:"Add a real defender (a partner) — let them make real reads",tip:"Slow it down: call your read out loud before executing"},
+       {t:"Film the drill: patterns of poor decisions show up on video faster than in real-time"}
+     ]},
+  ]},
+};
+
+const FAQS = [
+  {q:"Is the free plan really free forever?",a:"Yes — the free tier has no trial period or expiration. 45+ drills, the timer, and the workout generator are free indefinitely."},
+  {q:"What's actually different about Pro?",a:"Pro unlocks 75+ additional advanced drills, AI-generated personalized programs (30/60/90-day plans), video demonstrations, unlimited saved workouts, and advanced analytics."},
+  {q:"Can I use this on my phone?",a:"Yes — HoopIQ is fully mobile-optimized. Open it in any browser on your phone and it works like a native app. No download needed."},
+  {q:"What is the Coach plan for?",a:"The Coach plan is built for trainers, AAU coaches, and school programs. It lets you manage up to 25 athlete profiles, assign workouts to players, and view a team analytics dashboard."},
+  {q:"How does the AI training program work?",a:"You describe your goals (e.g. 'improve my crossover for tryouts in 4 weeks') and the AI builds a complete day-by-day training program customized to your level, available time, and equipment."},
+  {q:"Can I cancel anytime?",a:"Yes — all paid plans can be cancelled at any time with no penalty. You retain access until the end of your billing period."},
+];
+
+const LEADERBOARD = [
+  {rank:1,name:"KingJames_23",loc:"Los Angeles",score:2840,streak:14,badge:"🔥 On fire",av:"KJ",col:"#FF6B1A"},
+  {rank:2,name:"StephCurry30",loc:"Charlotte, NC",score:2610,streak:11,badge:"🏆 Top shooter",av:"SC",col:"#FFD700"},
+  {rank:3,name:"DWade_Flash",loc:"Miami",score:2395,streak:9,badge:"⚡ Ball wizard",av:"DW",col:"#5DCAA5"},
+  {rank:4,name:"MJ_Trainer",loc:"Chicago",score:1980,streak:6,badge:"",av:"MJ",col:"#888"},
+  {rank:5,name:"CP3_Point",loc:"Phoenix",score:1740,streak:5,badge:"",av:"CP",col:"#888"},
+  {rank:6,name:"ImmortalKobei",loc:"Philadelphia",score:1590,streak:4,badge:"",av:"IK",col:"#888"},
+  {rank:7,name:"HardFoul_HD",loc:"Houston",score:1445,streak:3,badge:"",av:"HD",col:"#888"},
+  {rank:8,name:"NightNight23",loc:"Brooklyn",score:1310,streak:2,badge:"",av:"NN",col:"#888"},
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let state = {
+  page:'home', cat:null, drills:[], drillIdx:0,
+  timerRunning:false, timerInterval:null, timeLeft:30, currentSet:1, totalSets:4, isWork:true, workTime:30, restTime:15,
+  user: JSON.parse(localStorage.getItem('hoopiq_user')||'null'),
+  progress: JSON.parse(localStorage.getItem('hoopiq_progress')||JSON.stringify({streak:[1,1,1,0,1,0,1],drillsDone:14,totalMin:186,skillRatings:{ball:68,shooting:55,finishing:70,defense:48,athleticism:30,iq:25},history:[],achievements:[],savedDrills:[]})),
+  workouts: JSON.parse(localStorage.getItem('hoopiq_workouts')||'[]'),
+  billing: 'monthly',
+};
+
+function saveState(){localStorage.setItem('hoopiq_progress',JSON.stringify(state.progress));localStorage.setItem('hoopiq_workouts',JSON.stringify(state.workouts));}
+function saveUser(){if(state.user)localStorage.setItem('hoopiq_user',JSON.stringify(state.user));else localStorage.removeItem('hoopiq_user');}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────────
+function goTo(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.mni').forEach(m=>m.classList.remove('active'));
+  const pgEl=document.getElementById('pg-'+pg);
+  if(pgEl) pgEl.classList.add('active');
+  const tab=document.querySelector(`.nav-tab[onclick="goTo('${pg}')"]`);
+  if(tab) tab.classList.add('active');
+  const mni=document.getElementById('mni-'+pg);
+  if(mni) mni.classList.add('active');
+  state.page=pg;
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(pg==='analytics') renderAnalytics();
+  if(pg==='leaderboard') renderLeaderboard('global');
+  if(pg==='pricing') renderFAQ();
+  if(pg==='drills') renderSkillGrid();
+  if(pg==='builder') renderSavedWorkouts();
+}
+
+// ─── SKILL GRID ──────────────────────────────────────────────────────────────
+function renderSkillGrid(){
+  const g=document.getElementById('skill-grid');
+  g.innerHTML=Object.entries(DRILLS).map(([k,v])=>`
+    <div class="skill-card ${!state.user&&v.free===0?'locked':''}" onclick="${v.free===0&&!state.user?'openModal(\'signup\')':'"loadCat(\''+k+'\')"'}">
+      ${v.free===0?'<div class="skill-lock">PRO</div>':''}
+      <span class="skill-emoji">${v.emoji}</span>
+      <div class="skill-name">${v.label}</div>
+      <div class="skill-desc">${v.desc}</div>
+      <div class="skill-count">${v.free} free · ${v.pro} pro</div>
+    </div>`).join('');
+  // fix the onclick issue
+  document.querySelectorAll('.skill-card').forEach((card,i)=>{
+    const key=Object.keys(DRILLS)[i];
+    const v=DRILLS[key];
+    card.onclick=()=>{
+      if(v.free===0&&!state.user){openModal('signup');return;}
+      loadCat(key);
+    };
+  });
+}
+
+function loadCat(cat){
+  state.cat=cat;
+  state.drills=DRILLS[cat].drills;
+  state.drillIdx=0;
+  document.getElementById('cat-title').textContent=DRILLS[cat].label+' Drills';
+  document.getElementById('drill-list-wrap').style.display='block';
+  renderDrillList(state.drills);
+  document.getElementById('drill-detail').style.display='none';
+  document.getElementById('drill-list-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderDrillList(drills){
+  const el=document.getElementById('drill-list');
+  el.innerHTML=drills.map((d,i)=>`
+    <div class="drill-item ${d===state.drills[state.drillIdx]?'active':''} ${!d.free&&!state.user?'pro-item':''}" onclick="selectDrill(${i})">
+      <div class="di-num">${i+1}</div>
+      <div class="di-body">
+        <h4>${d.name}</h4>
+        <p>${d.sets} sets · ${d.work}s work · ${d.rest}s rest</p>
+        <div class="di-tags">
+          <span class="di-tag ${d.level==='Beginner'?'tag-beg':d.level==='Intermediate'?'tag-int':'tag-adv'}">${d.level}</span>
+          <span class="di-tag" style="background:rgba(255,255,255,.05);color:var(--gr)">${d.focus}</span>
+          ${!d.free?'<span class="di-tag tag-pro">PRO</span>':''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterDrills(level){
+  const all=state.drills;
+  const filtered=level==='all'?all:all.filter(d=>d.level===level);
+  renderDrillList(filtered);
+  ['all','beg','int','adv'].forEach(k=>{
+    const el=document.getElementById('f-'+k);
+    if(el){el.style.borderColor=var_cbr;el.style.color=var_gr;}
+  });
+}
+const var_cbr='rgba(255,255,255,.08)';
+const var_gr='#8A8FA0';
+
+function selectDrill(idx){
+  if(!state.drills[idx].free&&!state.user){openModal('signup');return;}
+  state.drillIdx=idx;
+  const d=state.drills[idx];
+  showDrill(d);
+  renderDrillList(state.drills);
+}
+
+function showDrill(d){
+  document.getElementById('dd-cat').textContent=(state.cat?DRILLS[state.cat].label:'');
+  document.getElementById('dd-title').textContent=d.name;
+  document.getElementById('dd-tags').innerHTML=`
+    <span class="di-tag ${d.level==='Beginner'?'tag-beg':d.level==='Intermediate'?'tag-int':'tag-adv'}">${d.level}</span>
+    <span class="di-tag" style="background:rgba(255,255,255,.05);color:var(--gr)">${d.focus}</span>
+    ${!d.free?'<span class="di-tag tag-pro">PRO</span>':''}`;
+  document.getElementById('dd-sets').textContent=d.sets;
+  document.getElementById('dd-work').textContent=d.work+'s';
+  document.getElementById('dd-rest').textContent=d.rest+'s';
+  document.getElementById('dd-focus').textContent=d.focus;
+  document.getElementById('dd-cue').textContent=d.cue;
+  document.getElementById('dd-steps').innerHTML=d.steps.map((s,i)=>`
+    <div class="dd-step">
+      <div class="ds-num">${i+1}</div>
+      <div>
+        <div class="ds-txt">${s.t}</div>
+        ${s.tip?`<div class="ds-tip">Coach tip: ${s.tip}</div>`:''}
+      </div>
+    </div>`).join('');
+  // Timer
+  state.workTime=d.work; state.restTime=d.rest; state.totalSets=d.sets;
+  resetTimer();
+  buildStreak();
+  document.getElementById('drill-detail').style.display='block';
+  document.getElementById('drill-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function nextDrill(){
+  if(!state.drills.length)return;
+  state.drillIdx=(state.drillIdx+1)%state.drills.length;
+  selectDrill(state.drillIdx);
+}
+
+function saveDrill(){
+  const d=state.drills[state.drillIdx];
+  if(!d)return;
+  if(!state.user){openModal('signup');return;}
+  if(!state.progress.savedDrills.includes(d.id)){
+    state.progress.savedDrills.push(d.id);
+    saveState();
+    toast('Drill saved! ✓','success');
+    document.getElementById('save-btn').textContent='Saved ✓';
+  } else {toast('Already saved','');}
+}
+
+function shareDrill(){
+  const d=state.drills[state.drillIdx];
+  if(!d)return;
+  const text=`Check out this basketball drill: ${d.name} — ${d.sets} sets of ${d.work}s work. Train with HoopIQ!`;
+  if(navigator.share){navigator.share({title:'HoopIQ Drill',text,url:window.location.href});}
+  else{navigator.clipboard.writeText(text);toast('Link copied to clipboard!','success');}
+}
+
+function showVideoMsg(){
+  if(!state.user){openModal('signup');return;}
+  toast('Video demos available with Pro plan 🎬','');
+  goTo('pricing');
+}
+
+// ─── TIMER ───────────────────────────────────────────────────────────────────
+function toggleTimer(){
+  if(state.timerRunning){
+    clearInterval(state.timerInterval);
+    state.timerRunning=false;
+    document.getElementById('timer-btn').textContent='Resume';
+  } else {
+    state.timerRunning=true;
+    document.getElementById('timer-btn').textContent='Pause';
+    state.timerInterval=setInterval(timerTick,1000);
+  }
+}
+
+function timerTick(){
+  state.timeLeft--;
+  updateTimerDisplay();
+  // progress
+  const total=state.totalSets*(state.workTime+state.restTime);
+  const done=((state.currentSet-1)*(state.workTime+state.restTime))+(state.isWork?state.workTime-state.timeLeft:state.workTime+state.restTime-state.timeLeft);
+  const pct=Math.min(100,Math.round((done/total)*100));
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  if(state.timeLeft<=0){
+    if(state.isWork){
+      state.isWork=false; state.timeLeft=state.restTime;
+      document.getElementById('phase-label').textContent='REST';
+      document.getElementById('phase-label').style.color='#5DCAA5';
+      document.getElementById('timer-display').className='timer-display rest';
+    } else {
+      state.currentSet++;
+      updateSetDots();
+      if(state.currentSet>state.totalSets){
+        clearInterval(state.timerInterval);
+        state.timerRunning=false;
+        document.getElementById('timer-display').textContent='DONE';
+        document.getElementById('timer-display').className='timer-display done';
+        document.getElementById('phase-label').textContent='COMPLETE!';
+        document.getElementById('phase-label').style.color='var(--gold)';
+        document.getElementById('timer-btn').textContent='Restart';
+        state.progress.drillsDone++;
+        state.progress.totalMin+=Math.round((state.totalSets*(state.workTime+state.restTime))/60);
+        if(!state.progress.streak[6])state.progress.streak[6]=1;
+        saveState();
+        toast('Drill complete! Great work 🔥','success');
+        return;
+      }
+      state.isWork=true; state.timeLeft=state.workTime;
+      document.getElementById('phase-label').textContent='WORK';
+      document.getElementById('phase-label').style.color='var(--or)';
+      document.getElementById('timer-display').className='timer-display work';
+    }
+  }
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(state.timeLeft/60).toString().padStart(2,'0');
+  const s=(state.timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timer-display').textContent=m+':'+s;
+}
+
+function resetTimer(){
+  clearInterval(state.timerInterval);
+  state.timerRunning=false; state.currentSet=1; state.isWork=true; state.timeLeft=state.workTime;
+  const d=document.getElementById('timer-display');
+  d.textContent='00:'+(state.workTime<10?'0':'')+state.workTime;
+  d.className='timer-display';
+  document.getElementById('timer-btn').textContent='Start';
+  document.getElementById('phase-label').textContent='READY';
+  document.getElementById('phase-label').style.color='var(--or)';
+  document.getElementById('prog-fill').style.width='0%';
+  document.getElementById('prog-pct').textContent='0%';
+  buildSetDots();
+}
+
+function buildSetDots(){
+  const wrap=document.getElementById('set-indicator');
+  wrap.innerHTML=Array.from({length:state.totalSets},(_,i)=>`<div class="set-dot ${i===0?'active':''}"></div>`).join('');
+}
+
+function updateSetDots(){
+  const dots=document.querySelectorAll('.set-dot');
+  dots.forEach((dot,i)=>{
+    dot.className='set-dot'+(i<state.currentSet-1?' done':i===state.currentSet-1?' active':'');
+  });
+}
+
+function buildStreak(){
+  const days=['M','T','W','T','F','S','S'];
+  const el=document.getElementById('streak-days');
+  el.innerHTML=days.map((d,i)=>`<div class="s-day ${state.progress.streak[i]?'done':i===6?'today':''}">${d}</div>`).join('');
+}
+
+// ─── WORKOUT BUILDER ─────────────────────────────────────────────────────────
+const WO_DB={
+  Beginner:{
+    'Ball handling':[['Pound Dribble Series','4×30s'],['Figure 8 Dribble','3×40s'],['Crossover Basics','4×30s'],['Hesitation Attack','3×45s']],
+    Shooting:[['Form Shooting 3 Spots','3×60s'],['Mikan Drill','3×60s'],['Free Throw Routine','2×10 makes'],['Spot Up Shooting','3×90s']],
+    'Full game':[['Pound Dribble','3×30s'],['Form Shooting','3×60s'],['Defensive Slides','3×40s'],['Closeout Drill','3×45s'],['Mikan Drill','2×60s']],
+    Defense:[['Defensive Stance Hold','4×30s'],['Slide Series','4×40s'],['Ball Pressure Drill','4×30s'],['Closeout Drill','3×45s']],
+    Finishing:[['Finger Roll Layup','3×45s'],['Mikan Drill','3×60s'],['Reverse Layup Series','3×60s']],
+    Conditioning:[['Full Court Sprint x8','8 reps'],['Defensive Slide Suicides','4 reps'],['Line Jumps','4×30s'],['High Knees','4×30s']],
+  },
+  Intermediate:{
+    'Ball handling':[['Two-Ball Stationary','3×45s'],['Cone Weave Dribble','4×60s'],['Crossover Series Full','5×30s'],['Hesitation Attack','5×45s']],
+    Shooting:[['Catch and Shoot Corners','4×45s'],['Pull-Up Mid-Range','4×60s'],['Free Throw Series','3×10 makes'],['Spot Up Advanced','4×90s']],
+    'Full game':[['Two-Ball Dribble','3×45s'],['Catch and Shoot','4×45s'],['Euro Step Layup','4×60s'],['Closeout Drill','4×45s'],['Pull-Up Mid-Range','3×60s']],
+    Defense:[['Closeout Drill','4×45s'],['Drop Step Defense','3×60s'],['Help-and-Recover','3×60s'],['Ball Pressure Drill','4×30s']],
+    Finishing:[['Euro Step Layup','4×60s'],['Floater Series','3×60s'],['Reverse Layup Series','3×60s'],['Contact Finishing','3×90s']],
+    Conditioning:[['Full Court Ball Handling','6 reps'],['Defensive Slide Suicides','5 reps'],['Jump Rope','3×2 min'],['Sprint Ladder','5 reps']],
+  },
+  Advanced:{
+    'Ball handling':[['Spider Dribble','3×60s'],['Behind-Back Series','4×45s'],['Full Speed Cone Series','5×60s'],['Two-Ball Moving','4×60s']],
+    Shooting:[['Step-Back 3-Pointer','4×60s'],['Off-Screen Shooting','4×60s'],['Off-Dribble Series','5×90s'],['Spot Up — Game Speed','4×90s']],
+    'Full game':[['Full Speed Handles','4×60s'],['Step-Back 3s','4×60s'],['Floater Series','3×60s'],['Off-Screen Shooting','4×60s'],['Contact Finishing','3×90s']],
+    Defense:[['Live 1-on-1 Shell','4×60s'],['Full Court Press','5×60s'],['Help Rotation Drill','4×60s'],['Closeout Full Speed','5×45s']],
+    Finishing:[['Contact Finishing','4×90s'],['Euro Step Full Speed','4×60s'],['Floater Series','4×60s'],['Off-Balance Layups','3×60s']],
+    Conditioning:[['Gassers','6 reps'],['Slide Sprint Combo','6×45s'],['Full Court Layup Sprint','10 reps'],['Box Jumps','4×10']],
+  },
+};
+
+function generateWorkout(){
+  const level=document.getElementById('b-level').value;
+  const time=document.getElementById('b-time').value;
+  const focus=document.getElementById('b-focus').value;
+  const mins=parseInt(time)||30;
+  const drills=(WO_DB[level]||WO_DB.Intermediate)[focus]||(WO_DB[level]||WO_DB.Intermediate)['Full game'];
+  const count=mins<=15?2:mins<=30?3:mins<=45?4:5;
+  const selected=drills.slice(0,Math.min(count,drills.length));
+  const warmup='Dynamic warmup — high knees, butt kicks, hip circles, arm swings';
+  const cooldown='Cool-down stretch — quads, hamstrings, hip flexors, shoulders';
+  const id='wo-'+Date.now();
+  const wo={id,name:`${level} ${focus} — ${time}`,level,focus,time,drills:selected,created:new Date().toLocaleDateString()};
+  let html=`
+    <div id="workout-result">
+      <div class="workout-header">
+        <h3>${level.toUpperCase()} ${focus.toUpperCase()}</h3>
+        <div class="wo-meta">
+          <span class="wo-tag">${time}</span>
+          <span class="wo-tag">${focus}</span>
+          <span class="wo-tag">${level}</span>
+        </div>
+      </div>
+      <div class="workout-drill-row warm-cool">
+        <div class="wdr-num" style="color:#1D9E75">⚡</div>
+        <div><div class="wdr-name">Warmup</div><div class="wdr-detail">${warmup}</div></div>
+        <div class="wdr-time">5 min</div>
+      </div>`;
+  selected.forEach((d,i)=>{
+    html+=`<div class="workout-drill-row">
+      <div class="wdr-num">${i+1}</div>
+      <div><div class="wdr-name">${d[0]}</div><div class="wdr-detail">${d[1]}</div></div>
+      <div class="wdr-time">${focus==='Conditioning'?'Max':'Skill'}</div>
+    </div>`;
+  });
+  html+=`<div class="workout-drill-row warm-cool">
+    <div class="wdr-num" style="color:#1D9E75">🧘</div>
+    <div><div class="wdr-name">Cooldown</div><div class="wdr-detail">${cooldown}</div></div>
+    <div class="wdr-time">5 min</div>
+  </div>
+  <div class="workout-actions">
+    <button class="btn-primary" style="flex:1;padding:10px" onclick="goTo('drills')">Start First Drill →</button>
+    <button class="btn-secondary" style="flex:1;padding:10px" onclick="saveWorkout(${JSON.stringify(wo).replace(/"/g,'&quot;')})">Save Workout</button>
+    <button class="btn-secondary" style="flex:1;padding:10px" onclick="shareWorkout()">Share</button>
+  </div></div>`;
+  document.getElementById('workout-result').innerHTML=html;
+  document.getElementById('workout-result').style.display='block';
+}
+
+function saveWorkout(wo){
+  if(!state.user){openModal('signup');return;}
+  if(!state.workouts.find(w=>w.id===wo.id)){
+    state.workouts.unshift(wo);
+    if(state.workouts.length>20)state.workouts.pop();
+    saveState();
+    toast('Workout saved!','success');
+    renderSavedWorkouts();
+  }
+}
+
+function renderSavedWorkouts(){
+  const el=document.getElementById('saved-workouts-list');
+  if(!el)return;
+  if(!state.workouts.length){
+    el.innerHTML='<div style="text-align:center;padding:28px;color:var(--gr);font-size:13px">Generate a workout above to save it here.</div>';return;
+  }
+  el.innerHTML=state.workouts.slice(0,6).map(w=>`
+    <div style="background:var(--cbg);border:1px solid var(--cbr);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${w.name||'Saved Workout'}</div>
+        <div style="font-size:11px;color:var(--gr);margin-top:2px">${w.drills?.length||0} drills · ${w.created||''}</div>
+      </div>
+      <button style="padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;border:1px solid var(--or);background:rgba(255,107,26,.08);color:var(--or);cursor:pointer" onclick="goTo('drills')">Start</button>
+    </div>`).join('');
+}
+
+function shareWorkout(){
+  const text='Check out my HoopIQ custom workout! Train smarter at HoopIQ.';
+  if(navigator.share){navigator.share({title:'HoopIQ Workout',text,url:window.location.href});}
+  else{navigator.clipboard.writeText(text);toast('Link copied!','success');}
+}
+
+// ─── AI PROGRAM ──────────────────────────────────────────────────────────────
+async function generateAIProgram(){
+  if(!state.user){openModal('signup');return;}
+  const goal=document.getElementById('ai-goal').value.trim();
+  if(!goal){toast('Enter your goal first','');return;}
+  const out=document.getElementById('ai-program-output');
+  out.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:`You are an elite basketball skills coach. A player says: "${goal}". 
+Create a focused 30-day basketball training program. Format it as:
+- Week 1 focus + 3 specific drills with sets/reps
+- Week 2 focus + 3 specific drills
+- Week 3 focus + 3 specific drills  
+- Week 4 focus + 3 specific drills
+- One key daily habit to build
+Keep it concise, practical, and motivating. Use basketball terminology.`}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'Could not generate program. Please try again.';
+    out.innerHTML=`<div style="white-space:pre-wrap;color:var(--grl)">${text}</div>
+      <div class="share-bar">
+        <button class="share-btn" onclick="copyProgram()">Copy Program</button>
+        <button class="share-btn" onclick="shareWorkout()">Share</button>
+      </div>`;
+    window._aiProgram=text;
+  }catch(e){
+    out.innerHTML='<div style="color:var(--gr);font-style:italic">AI program generation requires a Pro subscription and API connection. Sign up for Pro to unlock personalized training programs.</div>';
+  }
+}
+
+function copyProgram(){
+  if(window._aiProgram){navigator.clipboard.writeText(window._aiProgram);toast('Program copied!','success');}
+}
+
+// ─── ANALYTICS ───────────────────────────────────────────────────────────────
+function renderAnalytics(){
+  const p=state.progress;
+  const streak=p.streak.filter(Boolean).length;
+  document.getElementById('analytics-stats').innerHTML=`
+    <div class="stat-card"><div class="sc-label">Drills completed</div><div class="sc-val">${p.drillsDone}</div><div class="sc-sub">all time</div><div class="sc-trend">+3 this week</div></div>
+    <div class="stat-card"><div class="sc-label">Total minutes</div><div class="sc-val">${p.totalMin}</div><div class="sc-sub">training time</div><div class="sc-trend">+24 this week</div></div>
+    <div class="stat-card"><div class="sc-label">Current streak</div><div class="sc-val">${streak}</div><div class="sc-sub">days in a row</div><div class="sc-trend">Keep it going!</div></div>
+    <div class="stat-card"><div class="sc-label">Overall rating</div><div class="sc-val">${Math.round(Object.values(p.skillRatings).reduce((a,b)=>a+b,0)/6)}</div><div class="sc-sub">out of 100</div><div class="sc-trend">+5 this month</div></div>`;
+
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals=[3,5,2,4,3,6,2];
+  const maxV=Math.max(...vals);
+  document.getElementById('weekly-chart').innerHTML=days.map((d,i)=>`
+    <div class="bc-col">
+      <div class="bc-bar ${i===6?'today':''}" style="height:${Math.round((vals[i]/maxV)*100)+'%'}"></div>
+      <div class="bc-label">${d}</div>
+    </div>`).join('');
+
+  const skills=['Ball Handling','Shooting','Finishing','Defense','Athleticism','IQ'];
+  const skillVals=[p.skillRatings.ball,p.skillRatings.shooting,p.skillRatings.finishing,p.skillRatings.defense,p.skillRatings.athleticism,p.skillRatings.iq];
+  const skillColors=['#FF6B1A','#FFD700','#FF4060','#5DCAA5','#378ADD','#7F77DD'];
+  document.getElementById('skill-radar').innerHTML=skills.map((s,i)=>`
+    <div class="skill-bar-row">
+      <div class="sbr-label"><span>${s}</span><span style="color:${skillColors[i]}">${skillVals[i]}</span></div>
+      <div class="sbr-track"><div class="sbr-fill" style="width:${skillVals[i]}%;background:${skillColors[i]}"></div></div>
+    </div>`).join('');
+
+  document.getElementById('activity-feed').innerHTML=[
+    {icon:'🔥',text:'Completed Pound Dribble Series',time:'Today'},
+    {icon:'🎯',text:'Completed Form Shooting 3 Spots',time:'Yesterday'},
+    {icon:'⚡',text:'7-day workout streak achieved',time:'2 days ago'},
+    {icon:'📋',text:'Saved custom workout: Intermediate Full Game',time:'3 days ago'},
+  ].map(a=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+      <span style="font-size:20px">${a.icon}</span>
+      <div style="flex:1;font-size:13px">${a.text}</div>
+      <div style="font-size:11px;color:var(--gr)">${a.time}</div>
+    </div>`).join('');
+
+  const badges=[
+    {icon:'🔥',name:'First Drill',desc:'Completed your first drill',earned:true},
+    {icon:'📅',name:'7-Day Streak',desc:'7 days in a row',earned:streak>=7},
+    {icon:'⚡',name:'Ball Handler',desc:'10 ball handling drills',earned:p.drillsDone>=10},
+    {icon:'🏆',name:'Pro Shooter',desc:'50 shooting drills',earned:false},
+    {icon:'💪',name:'Iron Will',desc:'30-day streak',earned:false},
+    {icon:'👑',name:'Elite',desc:'All skills above 80',earned:false},
+  ];
+  document.getElementById('achievements').innerHTML=badges.map(b=>`
+    <div style="background:${b.earned?'rgba(255,107,26,.1)':'rgba(255,255,255,.03)'};border:1px solid ${b.earned?'rgba(255,107,26,.3)':'rgba(255,255,255,.06)'};border-radius:10px;padding:10px 14px;text-align:center;min-width:90px;opacity:${b.earned?1:.5}">
+      <div style="font-size:24px;margin-bottom:4px">${b.icon}</div>
+      <div style="font-size:11px;font-weight:600;color:${b.earned?'var(--or)':'var(--gr)'}">${b.name}</div>
+      <div style="font-size:10px;color:var(--gr);margin-top:2px">${b.desc}</div>
+    </div>`).join('');
+}
+
+// ─── LEADERBOARD ─────────────────────────────────────────────────────────────
+function setLbFilter(f){
+  ['global','weekly','charlotte'].forEach(k=>{
+    const el=document.getElementById('lb-'+k);
+    el.style.borderColor=f===k?'var(--or)':'var(--cbr)';
+    el.style.background=f===k?'rgba(255,107,26,.1)':'transparent';
+    el.style.color=f===k?'var(--or)':'var(--gr)';
+  });
+  renderLeaderboard(f);
+}
+
+function renderLeaderboard(filter){
+  let data=[...LEADERBOARD];
+  if(filter==='weekly') data=data.sort(()=>Math.random()-.5).slice(0,6);
+  if(filter==='charlotte') data=data.filter((d,i)=>i%2===0||d.loc?.includes('Charlotte'));
+  const el=document.getElementById('lb-table');
+  el.innerHTML=data.map((p,i)=>`
+    <div class="lb-row ${i===data.length-1?'me':''}">
+      <span class="lb-rank ${i<3?'g':''}">${i+1}</span>
+      <div class="lb-avatar" style="background:${p.col}20;color:${p.col}">${p.av}</div>
+      <div class="lb-info">
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-detail">${p.loc||'—'} · ${p.streak}-day streak</div>
+      </div>
+      <div>
+        <span class="lb-score">${p.score.toLocaleString()}</span>
+        ${p.badge?`<span class="lb-badge">${p.badge}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ─── PRICING ─────────────────────────────────────────────────────────────────
+let billingAnnual=false;
+function toggleBilling(){
+  billingAnnual=!billingAnnual;
+  document.getElementById('billing-toggle').classList.toggle('on',billingAnnual);
+  document.getElementById('monthly-label').className='toggle-label'+(billingAnnual?'':' active');
+  document.getElementById('annual-label').className='toggle-label'+(billingAnnual?' active':'');
+  document.getElementById('pro-price').textContent=billingAnnual?'$65':'$9';
+  document.getElementById('pro-period').textContent=billingAnnual?'/ year':'/ month';
+  const orig=document.getElementById('pro-orig');
+  orig.textContent=billingAnnual?'$108/yr':'';
+  orig.style.display=billingAnnual?'inline':'none';
+  document.getElementById('coach-price').textContent=billingAnnual?'$199':'$29';
+  document.getElementById('coach-period').textContent=billingAnnual?'/ year':'/ month';
+}
+
+function renderFAQ(){
+  document.getElementById('faq-list').innerHTML=FAQS.map((f,i)=>`
+    <div style="border:1px solid var(--cbr);border-radius:10px;margin-bottom:8px;overflow:hidden" id="faq-${i}">
+      <div style="padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500" onclick="toggleFAQ(${i})">
+        ${f.q}
+        <span id="faq-icon-${i}" style="color:var(--or);font-size:18px;transition:.2s">+</span>
+      </div>
+      <div id="faq-body-${i}" style="display:none;padding:0 16px 14px;font-size:13px;color:var(--gr);line-height:1.65">${f.a}</div>
+    </div>`).join('');
+}
+
+function toggleFAQ(i){
+  const body=document.getElementById('faq-body-'+i);
+  const icon=document.getElementById('faq-icon-'+i);
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  icon.textContent=open?'+':'−';
+  icon.style.transform=open?'rotate(0)':'rotate(180deg)';
+}
+
+function signupForPro(){openModal('signup');}
+function signupForCoach(){openModal('signup');}
+
+// ─── AUTH MODAL ───────────────────────────────────────────────────────────────
+function openModal(type){
+  const overlay=document.getElementById('modal-overlay');
+  const content=document.getElementById('modal-content');
+  overlay.classList.add('open');
+  if(type==='login'){
+    content.innerHTML=`
+      <h2>WELCOME<br>BACK</h2>
+      <p>Sign in to your HoopIQ account</p>
+      <div class="form-field"><label>Email</label><input type="email" id="m-email" placeholder="you@email.com"></div>
+      <div class="form-field"><label>Password</label><input type="password" id="m-pass" placeholder="••••••••"></div>
+      <div class="modal-error" id="m-error">Invalid email or password</div>
+      <button class="modal-submit" onclick="doLogin()">Sign In</button>
+      <div class="modal-switch">No account? <span onclick="openModal('signup')">Create one free →</span></div>`;
+  } else if(type==='signup'){
+    content.innerHTML=`
+      <h2>CREATE YOUR<br><span style="color:var(--or)">FREE</span> ACCOUNT</h2>
+      <p>Track your progress, save drills, and compete on the leaderboard.</p>
+      <div class="form-field"><label>Name</label><input type="text" id="m-name" placeholder="Your name"></div>
+      <div class="form-field"><label>Email</label><input type="email" id="m-email" placeholder="you@email.com"></div>
+      <div class="form-field"><label>Password</label><input type="password" id="m-pass" placeholder="Create a password"></div>
+      <div class="modal-error" id="m-error">Please fill all fields</div>
+      <button class="modal-submit" onclick="doSignup()">Create Free Account</button>
+      <div class="modal-switch">Already have one? <span onclick="openModal('login')">Sign in →</span></div>`;
+  } else if(type==='profile'){
+    content.innerHTML=`
+      <h2>YOUR PROFILE</h2>
+      <div style="text-align:center;margin:16px 0">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin:0 auto 8px">${state.user?.name?.charAt(0)||'?'}</div>
+        <div style="font-size:15px;font-weight:600">${state.user?.name||''}</div>
+        <div style="font-size:13px;color:var(--gr)">${state.user?.email||''}</div>
+        <div style="margin-top:8px"><span class="badge badge-free">Free plan</span></div>
+      </div>
+      <div style="background:rgba(255,107,26,.08);border:1px solid rgba(255,107,26,.2);border-radius:8px;padding:12px;text-align:center;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:4px">Upgrade to Pro</div>
+        <div style="font-size:12px;color:var(--gr);margin-bottom:10px">Unlock 75+ drills and AI training programs</div>
+        <button class="plan-btn pro" style="padding:9px 20px;width:auto" onclick="closeModal();goTo('pricing')">Go Pro — $9/mo</button>
+      </div>
+      <button class="modal-submit" style="background:rgba(255,255,255,.06);color:var(--grl)" onclick="doLogout()">Sign Out</button>`;
+  }
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function closeModalOnOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+
+function doLogin(){
+  const email=document.getElementById('m-email')?.value.trim();
+  const pass=document.getElementById('m-pass')?.value;
+  if(!email||!pass){document.getElementById('m-error').style.display='block';return;}
+  const stored=JSON.parse(localStorage.getItem('hoopiq_accounts')||'{}');
+  if(stored[email]&&stored[email].pass===pass){
+    state.user={name:stored[email].name,email};
+    saveUser();
+    updateNavUser();
+    closeModal();
+    toast(`Welcome back, ${state.user.name}! 🏀`,'success');
+  } else {
+    document.getElementById('m-error').style.display='block';
+    document.getElementById('m-error').textContent='Invalid email or password';
+  }
+}
+
+function doSignup(){
+  const name=document.getElementById('m-name')?.value.trim();
+  const email=document.getElementById('m-email')?.value.trim();
+  const pass=document.getElementById('m-pass')?.value;
+  if(!name||!email||!pass){document.getElementById('m-error').style.display='block';return;}
+  const accounts=JSON.parse(localStorage.getItem('hoopiq_accounts')||'{}');
+  accounts[email]={name,pass};
+  localStorage.setItem('hoopiq_accounts',JSON.stringify(accounts));
+  state.user={name,email};
+  saveUser();
+  updateNavUser();
+  closeModal();
+  toast(`Welcome to HoopIQ, ${name}! 🏀`,'success');
+}
+
+function doLogout(){
+  state.user=null;saveUser();
+  updateNavUser();closeModal();
+  toast('Signed out','');
+}
+
+function updateNavUser(){
+  const chip=document.getElementById('user-chip');
+  const login=document.getElementById('nav-login');
+  if(state.user){
+    chip.style.display='flex';
+    login.style.display='none';
+    document.getElementById('user-avatar').textContent=state.user.name.charAt(0).toUpperCase();
+    document.getElementById('user-avatar').style.background='var(--or)';
+    document.getElementById('user-name-display').textContent=state.user.name;
+  } else {
+    chip.style.display='none';
+    login.style.display='block';
+  }
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='show '+(type||'');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.className='',2800);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  renderSkillGrid();
+  renderAnalytics();
+  renderLeaderboard('global');
+  renderFAQ();
+  renderSavedWorkouts();
+  updateNavUser();
+  if(state.user) document.getElementById('mni-home').classList.add('active');
+});
+</script>
+</body>
+</html>
